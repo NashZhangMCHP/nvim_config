@@ -89,9 +89,9 @@ Plug 'vim-scripts/sessionman.vim'
 Plug 'vim-scripts/mru.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'easymotion/vim-easymotion'
-Plug 'scrooloose/nerdtree',        { 'on': 'NERDTreeToggle' }
+Plug 'preservim/nerdtree',         { 'on': 'NERDTreeToggle' }
+Plug 'preservim/nerdcommenter'
 Plug 'unkiwii/vim-nerdtree-sync'
-Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar',          { 'on': 'TagbarToggle' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
@@ -168,6 +168,7 @@ let g:nerdtree_sync_cursorline = 1
 
 " ---- Tagbar ----
 let g:tagbar_sort = 0
+let g:tagbar_width = 30
 
 " Markdown support, see: https://github.com/majutsushi/tagbar/issues/70
 let g:tagbar_type_markdown = {
@@ -269,6 +270,9 @@ nnoremap <leader>ctt :CCTreeWindowToggle<CR>
 
 " Switch to the path of current editing file
 nnoremap <leader>. :cd %:p:h <BAR> pwd<CR>
+
+" ^M - convert to dos format for mix line ending file
+nnoremap <leader>^ :!unix2dos "%"<CR>
 
 " fzf
 nnoremap <C-p>      :Files<CR>

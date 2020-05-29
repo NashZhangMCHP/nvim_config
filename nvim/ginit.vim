@@ -8,9 +8,9 @@ GuiTabline 0
 GuiPopupmenu 0
 
 " Set GUI font, and enable to adjust fontsize with mouse
-GuiFont! Consolas:h12
+GuiFont! Consolas:h11
 
-let s:fontsize = 12
+let s:fontsize = 11
 function! AdjustFontSize(amount)
   let s:fontsize = s:fontsize+a:amount
   :execute "GuiFont! Consolas:h" . s:fontsize
