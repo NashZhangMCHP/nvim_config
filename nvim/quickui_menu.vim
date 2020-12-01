@@ -6,15 +6,14 @@ let g:quickui_color_scheme = 'borland'	" borland, solarized
 let g:quickui_show_tip = 1
 
 " hit space twice to open menu
-noremap <space><space> :call quickui#menu#open()<cr>
+noremap <leader><space><space> :call quickui#menu#open()<cr>
 
 " short key for preview_tag
-nnoremap <space>]    :call quickui#tools#preview_tag('')<cr>
-nnoremap <space>[    :call quickui#preview#close()<cr>
+nnoremap <leader><space>p    :call quickui#tools#preview_tag('')<cr>
 
 " ==================== Tips ====================
 " shortkey for tips textbox
-nnoremap <space>tt    :call quickui#textbox#open(tips_content, tips_opts)<cr>
+nnoremap <leader><space>t    :call quickui#textbox#open(tips_content, tips_opts)<cr>
 
 let tips_x = " \n
 	\ Upper<->lower: guW, gUw, Number + '~' \n\n

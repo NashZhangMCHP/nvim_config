@@ -15,14 +15,15 @@ set nobackup
 set noundofile
 set shiftwidth=4
 set tabstop=4
-"set expandtab
+set expandtab
 set wrap
 set linebreak
 set foldmethod=indent
 set foldlevelstart=99
 set ignorecase
 set smartcase
-set history=100     " Command history
+set history=100           " Command history
+set sessionoptions-=blank " Ignore NERDTree, Tagbar in session save
 "set autochdir
 "set colorcolumn=81
 "set spell
@@ -104,6 +105,7 @@ Plug 'yuttie/comfortable-motion.vim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-quickui'
+Plug 'skywind3000/vim-terminal-help'
 
 "-------- String search and replace --------
 " rg.exe need to be in Windows env. PATH (https://github.com/BurntSushi/ripgrep)
@@ -132,6 +134,7 @@ Plug 'junegunn/fzf.vim'
 "-------- git --------
 "Plug 'tpope/vim-fugitive'
 
+
 "-------- Color scheme --------
 Plug 'lifepillar/vim-solarized8'
 Plug 'NLKNguyen/papercolor-theme'
@@ -147,14 +150,19 @@ set background=light            " dark, light
 
 " ---- vim-airline ----
 let g:airline#extensions#whitespace#mixed_indent_algo = 2
-let g:airline_theme='solarized'    " solarized, bubblegum
+let g:airline_theme='solarized'                        " solarized, bubblegum
+let g:airline#extensions#tabline#enabled = 1           " enable airline tabline
+let g:airline#extensions#tabline#fnamemod = ':t'       " disable file paths in the tab
+let g:airline#extensions#tabline#buffer_nr_show = 1    " show buffer number
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved' " default, unique_tail_improved
+
+"Show terminal in tabline
+"https://github.com/vim-airline/vim-airline/blob/master/doc/airline.txt#L393-L403
+let g:airline#extensions#tabline#ignore_bufadd_pat = '!|defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
 
 " ---- session manager ----
 let sessionman_save_on_exit = 0
 
-" ---- NERDTree ----
-" Close vim if the only window left open is a NERDTree
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 " ---- nerdcommenter ----
 let g:NERDSpaceDelims = 1
@@ -201,20 +209,11 @@ let g:SuperTabCrMapping = 1
 let MRU_Window_Height = 20
 
 " ---- fzf ----
-" Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
+" Empty value to disable preview window altogether
+let g:fzf_preview_window = ''
 
 " [Tags] Command to generate tags file
-let g:fzf_tags_command = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
-
-" Likewise, Files command with preview window
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+let g:fzf_tags_command = 'ctags -R --c++-kinds=+p --fields=+niaS --extra=+q'
 
 "==================== Map to navigate Windows easily ====================
 " Use `ALT+{h,j,k,l}` to navigate windows from any mode
@@ -262,17 +261,20 @@ nnoremap <leader>] <C-]>
 nnoremap <leader>g 2<C-]>
 nnoremap <leader>t <C-T>
 
-" Map for CCTree
-nnoremap <leader>cdb :CCTreeLoadDB cscope.out<CR>
-nnoremap <leader>cff :CCTreeTraceForward<CR>
-nnoremap <leader>crr :CCTreeTraceReverse<CR>
-nnoremap <leader>ctt :CCTreeWindowToggle<CR>
+" --- Key map for w(workspace) ----
+nnoremap <leader>ww   :SessionSave<CR>
+nnoremap <leader>wn   :NERDTreeToggle<CR>
+nnoremap <leader>wt   :TagbarToggle<CR>
+nnoremap <leader>wl   :SessionList<CR>
 
 " Switch to the path of current editing file
-nnoremap <leader>. :cd %:p:h <BAR> pwd<CR>
+nnoremap <leader>wd   :cd %:p:h <BAR> pwd<CR>
+
+nnoremap <silent> <leader>wh       :nohlsearch<CR>  " Clean search (highlight)
+nnoremap <silent> <leader>wq       :cclose<CR>      " Close quickfix window
 
 " ^M - convert to dos format for mix line ending file
-nnoremap <leader>^ :!unix2dos "%"<CR>
+nnoremap <leader>fd :!unix2dos "%" <CR> <BAR> :e <CR>
 
 " fzf
 nnoremap <C-p>      :Files<CR>
@@ -285,32 +287,30 @@ nnoremap <leader>ft :Tags<CR>
 " Firefox markdown extension needed: [markdown-viewer](https://github.com/KeithLRobertson/markdown-viewer)
 nnoremap <silent> <leader>md :silent !start firefox %<CR>
 
-" Clean search (highlight)
-nnoremap <silent> <leader><Space>h       :nohlsearch<CR>
-" Close quickfix window
-nnoremap <silent> <leader><Space>q       :cclose<CR>
-
 map <F3>   :execute "Rg -w" expand("<cword>") "%"<CR>
 map <S-F3> :execute "Rg -w" expand("<cword>")<CR>
 map <F4>   :execute "Rg -w -tc" expand("<cword>") "%"<CR>
 map <S-F4> :execute "Rg -w -tc" expand("<cword>")<CR>
 
-map <F5>   :NERDTreeToggle<CR>
-map <S-F5> :NERDTreeFind <BAR> wincmd l<CR> " Synchronize NERDTree with current opened file
-map <F6>   :TagbarToggle<CR>
-
-" Quick run via <F8>
-map <F8> :call <SID>compile_and_run()<CR>
+" Quick run via <F5>
+map <F5> :call <SID>compile_and_run()<CR>
 
 function! s:compile_and_run()
     if &filetype == 'c'
-        :terminal gcc % -o %<.exe && %<.exe
+        :split | terminal gcc % -o %<.exe && %<.exe
+    elseif &filetype == 'cpp'
+        :split | terminal g++ % -o %<.exe && %<.exe
     elseif &filetype == 'python'
-        :terminal python %
+        :split | terminal python %
     endif
 endfunction
 
+map <F7>   :NERDTreeToggle<CR>
+map <S-F7> :NERDTreeFind <BAR> wincmd l<CR> " Synchronize NERDTree with current opened file
+map <F8>   :TagbarToggle<CR>
+
 " Shortcut for sessionman.vim. Close NERDTree and Tagbar before saving a session.
+map <S-F9>  :NERDTreeClose <BAR> TagbarClose<CR>
 map <F9>  :SessionSave<CR>
 map <F10> :SessionList<CR>
 
@@ -341,7 +341,6 @@ map <S-F12> :AsyncRun ctags -R --c++-kinds=+p --fields=+niaS --extra=+q --exclud
 :command GoFanyiBaidu      :silent !start firefox https://fanyi.baidu.com/\#en/zh/
 :command GoWikipedia       :silent !start firefox https://en.wikipedia.org/wiki/
 
-:command TerminalTab       :tabnew <BAR> terminal
 :command CmdWin            :silent !start cmd
 :command GitBash           :!"C:\Program Files\Git\git-bash.exe"
 
@@ -353,6 +352,15 @@ map <S-F12> :AsyncRun ctags -R --c++-kinds=+p --fields=+niaS --extra=+q --exclud
 :command Copen             :botright copen
 
 " ==================== My cscope settings ====================
+" Map for CCTree
+nnoremap <leader><space>db :CCTreeLoadDB cscope.out<CR>
+nnoremap <leader><space>dc :CCTreeTraceForward<CR><CR>
+nnoremap <leader><space>dd :CCTreeTraceReverse<CR><CR>
+nnoremap <leader><space>dt :CCTreeWindowToggle<CR>
+nnoremap <leader><space>dp :CCTreeRecurseDepthPlus<CR>
+nnoremap <leader><space>dm :CCTreeRecurseDepthMinus<CR>
+
+" Map for cscope
 if has("cscope")
 
     """"""""""""" Standard cscope/vim boilerplate
@@ -373,14 +381,14 @@ if has("cscope")
     "   'd'   called: find functions that function under cursor calls
     "
 
-    nmap <leader>,cs :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader>,cg :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader>,cc :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader>,ct :cs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader>,ce :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader>,cf :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <leader>,ci :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <leader>,cd :cs find d <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>fs :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>fg :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>fc :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>ft :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>fe :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <leader><space>ff :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <leader><space>fi :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <leader><space>fd :cs find d <C-R>=expand("<cword>")<CR><CR>
 endif
 
 " ==================== User menu ====================
