@@ -22,7 +22,7 @@ My Neovim configuration.
     - Ctags.exe  - used by [Tagbar][]
     - rg.exe     - used by [vim-ripgrep][]
     - cscope.exe - used by [CCTree][]
-	- fzf.exe    - used by [fzf.vim][]
+    - fzf.exe    - used by [fzf.vim][]
 5. Restart `nvim-qt.exe`. Enjoy, explore, and tune with your style :-)
 
 [Neovim install zip file]: <https://github.com/neovim/neovim/wiki/Installing-Neovim>
@@ -38,7 +38,6 @@ My Neovim configuration.
 *Note:*
 1. Run `%LOCALAPPDATA%` in Windows file explorer to open `~\AppData\Local\` folder.
 2. [Git](https://git-scm.com) is needed for vim-plug manager to clone plugins from GitHub.
-
 
 ## Further Setup Tips
 * Add Windows Sendto menu
@@ -56,3 +55,4 @@ My Neovim configuration.
 * http://vimsheet.com/ (Vim Cheatsheets)
 * https://hea-www.harvard.edu/~fine/Tech/vi.html (Vim Key Binding List)
 * http://www.moolenaar.net/habits.html (Seven habits of effective text editing, by Bram Moolenaar)
+

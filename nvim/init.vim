@@ -42,9 +42,6 @@ autocmd FocusGained * silent! checktime
 " Auto save changes when vim automatically switch buffers
 set autowrite
 
-" Always show tabpage
-"set showtabline=2
-
 " Set key map timeouts
 "set notimeout
 set ttimeoutlen=200    " 1000 = 1 second
@@ -55,98 +52,171 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-"set t_Co=256
-
-" Use ripgrep instead of vimgrep
-if executable("rg")
-  set grepprg=rg\ --vimgrep\ --no-heading
-endif
-
 "==================== Make Neovim with python support ====================
 " Need to installe Python3 first, and then run `py -3 -m pip install pynvim`.
 " Execute `:checkhealth` for vim health checks to see python support status.
 " Set Python path
-"let g:python_host_prog  = "C:/Python27/python.exe"
-"let g:python3_host_prog = "C:/Python37/python.exe"
-let g:python3_host_prog = "python.exe"    " Need to Add python in your PATH
+"let g:python3_host_prog = "C:/Python39/python.exe"
+let g:python3_host_prog = "python.exe"    " Need to Add python folder in your PATH system variable
 
 
 "==================== Leader key ====================
 " Set your leader key. The default leader key is '\'
 
 "-------- Use `;` as leader key --------
-let mapleader = ";"
-map <S-F1> :WhichKey ';'<CR>
+"let mapleader = ';'
+"map <S-F1> :WhichKey ';'<CR>
 
+"-------- Use <SPACE> as leader key --------
+nnoremap <space> <Nop>
+let mapleader = ' '
+map <S-F1> :WhichKey ' '<CR>
 
 "==================== Plugin manager ====================
 "-------- Specify a directory for plugins --------
 call plug#begin('~/AppData/Local/nvim/plugged')
 
 "-------- Basic Plugins --------
-Plug 'bling/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lua/plenary.nvim'       " For asynchronous jobs, Neovim only
+Plug 'nvim-tree/nvim-web-devicons' " File type icons, need Nerd Fonts
 Plug 'vim-scripts/sessionman.vim'
 Plug 'vim-scripts/mru.vim'
-Plug 'jlanzarotta/bufexplorer'
 Plug 'easymotion/vim-easymotion'
-Plug 'preservim/nerdtree',         { 'on': 'NERDTreeToggle' }
 Plug 'preservim/nerdcommenter'
-Plug 'unkiwii/vim-nerdtree-sync'
-Plug 'majutsushi/tagbar',          { 'on': 'TagbarToggle' }
-Plug 'jiangmiao/auto-pairs'
-Plug 'tpope/vim-surround'
-Plug 'godlygeek/tabular'
-Plug 'hari-rangarajan/CCTree'
-Plug 'plasticboy/vim-markdown'
-Plug 'mbbill/undotree'
+Plug 'vim-airline/vim-airline'     " Status line
+Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-tree/nvim-tree.lua'     " File tree
+Plug 'majutsushi/tagbar',          {'on': 'TagbarToggle'}
+Plug 'godlygeek/tabular',          {'on': 'Tabularize'}
+Plug 'akinsho/toggleterm.nvim',    {'on': 'ToggleTerm'}
+Plug 'tmsvg/pear-tree'
+Plug 'preservim/vim-markdown'
 Plug 'sukima/xmledit'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-quickui'
 Plug 'skywind3000/vim-terminal-help'
+Plug 'lukas-reineke/indent-blankline.nvim'
 
-"-------- String search and replace --------
-" rg.exe need to be in Windows env. PATH (https://github.com/BurntSushi/ripgrep)
+"-------- Search and replace --------
+" rg.exe need to be in Windows PATH system variable (https://github.com/BurntSushi/ripgrep)
 Plug 'jremmen/vim-ripgrep'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-project.nvim'  " Project Manager
 
-"Plug 'brooth/far.vim'
-
-"-------- Auto complete --------
-Plug 'ervandew/supertab'
+"-------- Auto completion --------
+" Plug 'ervandew/supertab'
 Plug 'vim-scripts/OmniCppComplete'
 
-" deoplete.vim need python3 support
-"let g:deoplete#enable_at_startup = 1
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'deoplete-plugins/deoplete-tag'
-
-"-------- Fuzzy file seach --------
-" 'fzf.exe' need to be in Windows env. PATH (https://github.com/junegunn/fzf)
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-
-"-------- snippets --------
-"Plug 'honza/vim-snippets'
-"Plug 'sirver/UltiSnips'
-
-"-------- git --------
-"Plug 'tpope/vim-fugitive'
-
+" -- Use nvim-cmp for complete --
+" Plug 'neovim/nvim-lspconfig'
+" Plug 'hrsh7th/cmp-nvim-lsp'
+" Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 
 "-------- Color scheme --------
-Plug 'lifepillar/vim-solarized8'
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'ishan9299/nvim-solarized-lua'
 
 "-------- Initialize plugin system --------
 call plug#end()
 
+" ---- Setup for lua plugins ----
+" -- telescope related --
+lua require('telescope').load_extension('project')
+
+lua << EOF
+require('telescope').setup {
+    defaults = {
+        path_display={"truncate"}
+    }
+}
+EOF
+
+
+" -- nvim-tree --
+lua << EOF
+require("nvim-tree").setup {
+    git = {
+        enable = false
+    }
+}
+EOF
+
+" -- indent-blankline --
+let g:indent_blankline_enabled = v:false " Disable by default
+lua vim.opt.listchars:append "space:⋅"
+lua vim.opt.listchars:append "eol:↴"
+lua << EOF
+require("indent_blankline").setup {
+    show_end_of_line = true,
+    space_char_blankline = " ",
+}
+EOF
+
+" -- toggleterm --
+lua << EOF
+require("toggleterm").setup {
+    shade_terminals = false
+}
+EOF
+
+" -- nvim-cmp --
+lua <<EOF
+  -- Set up nvim-cmp.
+  local cmp = require'cmp'
+
+  cmp.setup({
+    mapping = {
+    -- https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, {"i","s","c",}),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, {"i","s","c",}),
+    },
+
+    sources = cmp.config.sources({
+      { name = 'buffer' },
+      { name = 'omni' },
+    })
+  })
+
+  -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+EOF
+
 
 "==================== Plugin settings ====================
 " ---- color scheme ----
-colorscheme solarized8_flat     " default, solarized8_flat, solarized8, PaperColor
-set background=light            " dark, light
+colorscheme solarized-flat     " default, solarized-flat
+set background=dark            " dark, light
 
 " ---- vim-airline ----
 let g:airline#extensions#whitespace#mixed_indent_algo = 2
@@ -163,16 +233,15 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!|defx|gundo|nerd_tree|sta
 " ---- session manager ----
 let sessionman_save_on_exit = 0
 
-
 " ---- nerdcommenter ----
 let g:NERDSpaceDelims = 1
 let g:NERDCompactSexyComs = 1
 let g:NERDCommentEmptyLines = 1
 let g:NERDDefaultAlign = 'left'
-let g:NERDCustomDelimiters = { 'c': { 'left': '//'} }
-
-" ---- vim-nerdtree-sync ----
-let g:nerdtree_sync_cursorline = 1
+let g:NERDCustomDelimiters = {
+            \ 'c': { 'left': '//'},
+            \ 'python': { 'left': '#', 'right': '' },
+            \ }
 
 " ---- Tagbar ----
 let g:tagbar_sort = 0
@@ -194,8 +263,8 @@ let g:vim_markdown_no_default_key_mappings = 1
 let g:vim_markdown_toc_autofit = 1
 let g:vim_markdown_conceal = 0
 
-" ---- auto-pairs ----
-let g:AutoPairsMapSpace = 0
+" ---- pear-tree ----
+let g:pear_tree_repeatable_expand = 0
 
 " ---- OmniCppComplete ----
 let OmniCpp_SelectFirstItem = 0
@@ -208,12 +277,6 @@ let g:SuperTabCrMapping = 1
 " ---- MRU ----
 let MRU_Window_Height = 20
 
-" ---- fzf ----
-" Empty value to disable preview window altogether
-let g:fzf_preview_window = ''
-
-" [Tags] Command to generate tags file
-let g:fzf_tags_command = 'ctags -R --c++-kinds=+p --fields=+niaS --extra=+q'
 
 "==================== Map to navigate Windows easily ====================
 " Use `ALT+{h,j,k,l}` to navigate windows from any mode
@@ -231,7 +294,7 @@ nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
 
-"==================== Function key map ====================
+"==================== Function keymap ====================
 
 " Map <Esc> to exit terminal-mode
 tnoremap <Esc> <C-\><C-n>
@@ -252,20 +315,15 @@ unmap <C-Y>
 :map <2-MiddleMouse> <Nop>
 :imap <2-MiddleMouse> <Nop>
 
-" Toggle netrw file explore on left window.
-let g:netrw_winsize = 20
-nnoremap <leader>e :Lexplore<CR>
-
 " For ctags jump
 nnoremap <leader>] <C-]>
 nnoremap <leader>g 2<C-]>
 nnoremap <leader>t <C-T>
 
-" --- Key map for w(workspace) ----
-nnoremap <leader>ww   :SessionSave<CR>
-nnoremap <leader>wn   :NERDTreeToggle<CR>
-nnoremap <leader>wt   :TagbarToggle<CR>
+" Keymap for w
 nnoremap <leader>wl   :SessionList<CR>
+nnoremap <leader>ww   :SessionSave<CR>
+nnoremap <leader>wt   :ToggleTerm<CR>
 
 " Switch to the path of current editing file
 nnoremap <leader>wd   :cd %:p:h <BAR> pwd<CR>
@@ -273,19 +331,27 @@ nnoremap <leader>wd   :cd %:p:h <BAR> pwd<CR>
 nnoremap <silent> <leader>wh       :nohlsearch<CR>  " Clean search (highlight)
 nnoremap <silent> <leader>wq       :cclose<CR>      " Close quickfix window
 
+" File tree, Taglist and proejct
+nnoremap <leader>e  :NvimTreeToggle <CR>
+nnoremap <leader>p  :Telescope project<CR>
+nnoremap <leader>l  :TagbarToggle<CR>
+
+" Telescope
+nnoremap <leader>ff :Telescope find_files<CR>
+nnoremap <leader>fb :Telescope buffers<CR>
+nnoremap <leader>fg :Telescope live_grep<CR>
+nnoremap <leader>fh :Telescope help_tags<CR>
+
+" Find shortcut
+nnoremap <C-f>      :/
+nnoremap <S-C-f>    :Telescope live_grep<CR>
+
 " ^M - convert to dos format for mix line ending file
 nnoremap <leader>fd :!unix2dos "%" <CR> <BAR> :e <CR>
 
-" fzf
-nnoremap <C-p>      :Files<CR>
-nnoremap <leader>ff :Files<CR>
-nnoremap <leader>fb :Buffers<CR>
-nnoremap <leader>fh :History<CR>
-nnoremap <leader>ft :Tags<CR>
-
 " Preview for markdown
 " Firefox markdown extension needed: [markdown-viewer](https://github.com/KeithLRobertson/markdown-viewer)
-nnoremap <silent> <leader>md :silent !start firefox %<CR>
+nnoremap <silent> <leader>md :silent !start firefox "%"<CR>
 
 map <F3>   :execute "Rg -w" expand("<cword>") "%"<CR>
 map <S-F3> :execute "Rg -w" expand("<cword>")<CR>
@@ -297,20 +363,18 @@ map <F5> :call <SID>compile_and_run()<CR>
 
 function! s:compile_and_run()
     if &filetype == 'c'
-        :split | terminal gcc % -o %<.exe && %<.exe
+        :TermExec cmd="gcc % -o %<.exe && %<.exe"
     elseif &filetype == 'cpp'
-        :split | terminal g++ % -o %<.exe && %<.exe
+        :TermExec cmd="g++ % -o %<.exe && %<.exe"
     elseif &filetype == 'python'
-        :split | terminal python %
+        :TermExec cmd="python %"
     endif
 endfunction
 
-map <F7>   :NERDTreeToggle<CR>
-map <S-F7> :NERDTreeFind <BAR> wincmd l<CR> " Synchronize NERDTree with current opened file
+map <F7>   :NvimTreeToggle<CR>
 map <F8>   :TagbarToggle<CR>
 
 " Shortcut for sessionman.vim. Close NERDTree and Tagbar before saving a session.
-map <S-F9>  :NERDTreeClose <BAR> TagbarClose<CR>
 map <F9>  :SessionSave<CR>
 map <F10> :SessionList<CR>
 
@@ -344,6 +408,8 @@ map <S-F12> :AsyncRun ctags -R --c++-kinds=+p --fields=+niaS --extra=+q --exclud
 :command CmdWin            :silent !start cmd
 :command GitBash           :!"C:\Program Files\Git\git-bash.exe"
 
+:command Terminal          :ToggleTerm
+
 " Close other buffers or use `:tabonly` to close other tabs
 :command CloseOtherBuffers :silent %bd | e#
 
@@ -351,45 +417,6 @@ map <S-F12> :AsyncRun ctags -R --c++-kinds=+p --fields=+niaS --extra=+q --exclud
 "autocmd FileType qf wincmd J
 :command Copen             :botright copen
 
-" ==================== My cscope settings ====================
-" Map for CCTree
-nnoremap <leader><space>db :CCTreeLoadDB cscope.out<CR>
-nnoremap <leader><space>dc :CCTreeTraceForward<CR><CR>
-nnoremap <leader><space>dd :CCTreeTraceReverse<CR><CR>
-nnoremap <leader><space>dt :CCTreeWindowToggle<CR>
-nnoremap <leader><space>dp :CCTreeRecurseDepthPlus<CR>
-nnoremap <leader><space>dm :CCTreeRecurseDepthMinus<CR>
-
-" Map for cscope
-if has("cscope")
-
-    """"""""""""" Standard cscope/vim boilerplate
-    " show msg when any other cscope db added
-    set cscopeverbose
-
-    """"""""""""" My cscope/vim key mappings
-    "
-    " The following maps all invoke one of the following cscope search types:
-    "
-    "   's'   symbol: find all references to the token under cursor
-    "   'g'   global: find global definition(s) of the token under cursor
-    "   'c'   calls:  find all calls to the function name under cursor
-    "   't'   text:   find all instances of the text under cursor
-    "   'e'   egrep:  egrep search for the word under cursor
-    "   'f'   file:   open the filename under cursor
-    "   'i'   includes: find files that include the filename under cursor
-    "   'd'   called: find functions that function under cursor calls
-    "
-
-    nmap <leader><space>fs :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader><space>fg :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader><space>fc :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader><space>ft :cs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader><space>fe :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <leader><space>ff :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <leader><space>fi :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <leader><space>fd :cs find d <C-R>=expand("<cword>")<CR><CR>
-endif
-
 " ==================== User menu ====================
 runtime quickui_menu.vim
+

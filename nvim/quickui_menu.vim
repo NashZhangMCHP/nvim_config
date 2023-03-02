@@ -1,18 +1,18 @@
 " ==================== Option ====================
 " set color scheme
-let g:quickui_color_scheme = 'borland'	" borland, solarized
+let g:quickui_color_scheme = 'solarized'	" borland, solarized
 
 " enable to display tips in the cmdline
 let g:quickui_show_tip = 1
 
-" hit space twice to open menu
-noremap <leader><space><space> :call quickui#menu#open()<cr>
+" short key: open menu
+noremap <leader><space>m :call quickui#menu#open()<cr>
 
-" short key for preview_tag
-nnoremap <leader><space>p    :call quickui#tools#preview_tag('')<cr>
+" short key: preview_tag
+nnoremap gp    :call quickui#tools#preview_tag('')<cr>
 
 " ==================== Tips ====================
-" shortkey for tips textbox
+" shortkey: show tips textbox
 nnoremap <leader><space>t    :call quickui#textbox#open(tips_content, tips_opts)<cr>
 
 let tips_x = " \n
@@ -22,6 +22,7 @@ let tips_x = " \n
 	\ :'<,'>!python  \n\n
 	\ Run %LOCALAPPDATA% in Windows file explorer to open ~/AppData/Local/ folder.\n
 	\ Type shell:sendto in the run box. Then OK. That opens the 'sendto' folder.\n
+	\ nvim-qt --startuptime filename.txt\n
 	\ "
 
 let tips_content = filter(split(tips_x, "\n"), 'v:key != ""')
@@ -34,7 +35,6 @@ call quickui#menu#reset()
 
 " install a 'File' menu, use [text, command] to represent an item.
 call quickui#menu#install('&File', [
-			\ ["&Tutorial",   'Tutor', "Show Vim Tutor"],
 			\ ["&New File",   'new' ],
 			\ ["&Open File",  'e.' ],
 			\ ["&Close File", 'bd' ],
@@ -53,13 +53,12 @@ call quickui#menu#install('&Edit', [
 			\ ['&Find',                'execute "Rg -w" expand("<cword>") "%"'],
 			\ ['Find in File&s',       'execute "Rg -w" expand("<cword>")'],
 			\ ['&Trim Trailing Space', '%s /\s\+$//e | w'],
-			\ ['Toggle &deoplete',     'call deoplete#toggle()'],
 			\ ])
 
 " install a 'View' menu
 call quickui#menu#install('&View', [
-			\ ['&NerdTree Toggle', 'NERDTreeToggle'],
-			\ ['&Tagbar Toggle',   'TagbarToggle'],
+			\ ['&File Explorer Toggle', 'NvimTreeToggle'],
+			\ ['&Tagbar Toggle',        'TagbarToggle'],
 			\ ])
 
 " install a 'C/C++' menu
