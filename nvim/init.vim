@@ -24,6 +24,9 @@ set ignorecase
 set smartcase
 set history=100           " Command history
 set sessionoptions-=blank " Ignore NERDTree, Tagbar in session save
+set cinkeys-=0#           " Ignore indent for '#' as the first character in a line
+set backupcopy=yes
+set scrolloff=999
 "set autochdir
 "set colorcolumn=81
 "set spell
@@ -97,7 +100,8 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-quickui'
 Plug 'skywind3000/vim-terminal-help'
-Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'kevinhwang91/nvim-bqf'
+Plug 'fidian/hexmode'
 
 "-------- Search and replace --------
 " rg.exe need to be in Windows PATH system variable (https://github.com/BurntSushi/ripgrep)
@@ -142,17 +146,6 @@ require("nvim-tree").setup {
     git = {
         enable = false
     }
-}
-EOF
-
-" -- indent-blankline --
-let g:indent_blankline_enabled = v:false " Disable by default
-lua vim.opt.listchars:append "space:⋅"
-lua vim.opt.listchars:append "eol:↴"
-lua << EOF
-require("indent_blankline").setup {
-    show_end_of_line = true,
-    space_char_blankline = " ",
 }
 EOF
 
@@ -329,7 +322,8 @@ nnoremap <leader>wt   :ToggleTerm<CR>
 nnoremap <leader>wd   :cd %:p:h <BAR> pwd<CR>
 
 nnoremap <silent> <leader>wh       :nohlsearch<CR>  " Clean search (highlight)
-nnoremap <silent> <leader>wq       :cclose<CR>      " Close quickfix window
+nnoremap <silent> <leader>wq       :copen<CR>       " Open quickfix window
+nnoremap <silent> <leader>wf       :cclose<CR>      " Close quickfix window
 
 " File tree, Taglist and proejct
 nnoremap <leader>e  :NvimTreeToggle <CR>
@@ -340,6 +334,7 @@ nnoremap <leader>l  :TagbarToggle<CR>
 nnoremap <leader>ff :Telescope find_files<CR>
 nnoremap <leader>fb :Telescope buffers<CR>
 nnoremap <leader>fg :Telescope live_grep<CR>
+nnoremap <leader>fc :Telescope current_buffer_fuzzy_find<CR>
 nnoremap <leader>fh :Telescope help_tags<CR>
 
 " Find shortcut
@@ -362,6 +357,7 @@ map <S-F4> :execute "Rg -w -tc" expand("<cword>")<CR>
 map <F5> :call <SID>compile_and_run()<CR>
 
 function! s:compile_and_run()
+    :wall
     if &filetype == 'c'
         :TermExec cmd="gcc % -o %<.exe && %<.exe"
     elseif &filetype == 'cpp'

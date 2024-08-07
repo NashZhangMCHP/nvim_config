@@ -16,10 +16,9 @@ nnoremap gp    :call quickui#tools#preview_tag('')<cr>
 nnoremap <leader><space>t    :call quickui#textbox#open(tips_content, tips_opts)<cr>
 
 let tips_x = " \n
-	\ Upper<->lower: guW, gUw, Number + '~' \n\n
+	\ Upper<->lower: guw, gUw \n\n
 	\ Column edit: ctrl+Q, j..., A or I, ESC \n\n
-	\ %!xxd, %!xxx-r \n\n
-	\ :'<,'>!python  \n\n
+	\ %!xxd, %!xxd -r \n\n
 	\ Run %LOCALAPPDATA% in Windows file explorer to open ~/AppData/Local/ folder.\n
 	\ Type shell:sendto in the run box. Then OK. That opens the 'sendto' folder.\n
 	\ nvim-qt --startuptime filename.txt\n
