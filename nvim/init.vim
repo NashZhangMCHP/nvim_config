@@ -26,7 +26,7 @@ set history=100           " Command history
 set sessionoptions-=blank " Ignore NERDTree, Tagbar in session save
 set cinkeys-=0#           " Ignore indent for '#' as the first character in a line
 set backupcopy=yes
-set scrolloff=999
+"set scrolloff=2
 "set autochdir
 "set colorcolumn=81
 "set spell
